@@ -9,9 +9,20 @@ def index(request):
     # city = 'Las Vegas'
 
     # saving city
+    err_msg = ''
     if request.method == 'POST':
         form = CityForm(request.POST)
-        form.save()
+
+        # Prevent duplicate cities to be added
+        if form.is_valid():
+            new_city = form.cleaned_data['name']
+            existing_city_count = City.objects.filter(name=new_city).count()
+
+            if existing_city_count == 0:
+                form.save()
+            else:
+                err_msg = "City already exists"
+
 
     form = CityForm()
 
