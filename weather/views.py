@@ -10,6 +10,7 @@ def index(request):
 
     # saving city
     err_msg = ''
+    
     if request.method == 'POST':
         form = CityForm(request.POST)
 
@@ -19,11 +20,17 @@ def index(request):
             existing_city_count = City.objects.filter(name=new_city).count()
 
             if existing_city_count == 0:
-                form.save()
+                # checking if the city exists in an api
+                r = requests.get(url.format(new_city)).json()
+                # print(r)
+                if r['cod'] == 200:
+                    form.save()
+                else:
+                    err_msg = "City does not exist in the world!"
             else:
                 err_msg = "City already exists"
 
-
+    # print(err_msg)
     form = CityForm()
 
 
